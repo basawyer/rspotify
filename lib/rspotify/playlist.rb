@@ -114,6 +114,10 @@ module RSpotify
       @path << (@href =~ /\/starred$/ ? 'starred' : "playlists/#{@id}")
     end
 
+    def owner=(new_owner)
+      @owner = new_owner
+    end
+
     # Adds one or more tracks to a playlist in user's Spotify account. This method is only available when the
     # current user has granted access to the *playlist-modify-public* and *playlist-modify-private* scopes.
     #
