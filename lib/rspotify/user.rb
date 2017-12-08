@@ -63,9 +63,7 @@ module RSpotify
       headers = oauth_header(user_id).merge(custom_headers)
       params << headers
       RSpotify.send(:send_request, verb, path, *params)
-
-    rescue RestClient::Exception => e
-      raise e if e.response !~ /access token expired/
+    rescue RestClient::Forbidden
       refresh_token(user_id)
       params[-1] = oauth_header(user_id).merge(custom_headers)
       RSpotify.send(:send_request, verb, path, *params)
