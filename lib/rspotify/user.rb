@@ -53,8 +53,7 @@ module RSpotify
 
     def self.oauth_send(user_id, verb, path, *params)
       RSpotify.send(:send_request, verb, path, *params)
-    rescue RestClient::Unauthorized => e
-      raise e if e.response !~ /access token expired/
+    rescue RestClient::Forbidden
       refresh_token(user_id)
       params[-1] = oauth_header(user_id)
       RSpotify.send(:send_request, verb, path, *params)
