@@ -38,6 +38,7 @@ module RSpotify
       response = RestClient.post(TOKEN_URI, request_body, RSpotify.send(:auth_header))
       response = JSON.parse(response)
       @@users_credentials[user_id]['token'] = response['access_token']
+      @@users_credentials[user_id]['expires_at'] = (Time.now + 50.minutes).to_i
     rescue RestClient::BadRequest => e
       raise e if e.response !~ /Refresh token revoked/
     end
@@ -59,6 +60,10 @@ module RSpotify
     private_class_method :oauth_header
 
     def self.oauth_send(user_id, verb, path, *params)
+      if Time.at(@@users_credentials[user_id]["expires_at"]) < Time.now
+        refresh_token(user_id)
+      end
+
       custom_headers = extract_custom_headers(params)
       headers = oauth_header(user_id).merge(custom_headers)
       params << headers
